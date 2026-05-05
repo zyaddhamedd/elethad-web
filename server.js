@@ -35,7 +35,7 @@ app.prepare().then(async () => {
   server.use('/backend', backendApp);
 
   // Let Next.js handle all other routes (frontend pages, /api proxy routes, assets)
-  server.all('*', (req, res) => {
+  server.use((req, res) => {
     return handle(req, res);
   });
 
