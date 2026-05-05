@@ -5,6 +5,14 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function getBackendBaseUrl() {
+  if (process.env.BACKEND_BASE_URL) return process.env.BACKEND_BASE_URL;
+  if (process.env.NODE_ENV === 'production') {
+    return `http://127.0.0.1:${process.env.PORT || 3000}/backend/api`;
+  }
+  return 'http://127.0.0.1:5050/api';
+}
+
 export function getUploadedImageProxyUrl(imageUrl?: string, type: "categories" | "products" | "orders" = "categories") {
   if (!imageUrl) {
     return "";

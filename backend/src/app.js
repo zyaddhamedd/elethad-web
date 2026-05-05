@@ -48,18 +48,22 @@ process.on('uncaughtException', (error) => {
 	process.exit(1);
 });
 
-(async () => {
-	try {
-		await initDB();
-		const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-		
-		// Handle server errors
-		server.on('error', (err) => {
-			console.error('❌ Server error:', err);
-			process.exit(1);
-		});
-	} catch (err) {
-		console.error('❌ DB initialization failed', err);
-		process.exit(1);
-	}
-})();
+if (require.main === module) {
+  (async () => {
+    try {
+      await initDB();
+      const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+      
+      // Handle server errors
+      server.on('error', (err) => {
+        console.error('❌ Server error:', err);
+        process.exit(1);
+      });
+    } catch (err) {
+      console.error('❌ DB initialization failed', err);
+      process.exit(1);
+    }
+  })();
+}
+
+module.exports = app;

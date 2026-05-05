@@ -1,6 +1,7 @@
+import { getBackendBaseUrl } from "@/lib/utils";
 import { NextResponse, NextRequest } from "next/server";
 
-const BACKEND_BASE_URL = "http://127.0.0.1:5050";
+const BACKEND_BASE_URL = getBackendBaseUrl().replace("/api", "");
 
 export async function GET(
   request: NextRequest,

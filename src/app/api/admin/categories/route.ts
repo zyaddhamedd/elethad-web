@@ -1,7 +1,8 @@
+import { getBackendBaseUrl } from "@/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
 import { fetchAdminBackend } from "@/app/api/admin/utils";
 
-const BACKEND_BASE_URL = "http://127.0.0.1:5050/api";
+const BACKEND_BASE_URL = getBackendBaseUrl();
 
 export async function GET() {
   try {

@@ -1,6 +1,7 @@
+import { getBackendBaseUrl } from "@/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
 
-const BACKEND_BASE_URL = "http://127.0.0.1:5050/api";
+const BACKEND_BASE_URL = getBackendBaseUrl();
 
 // Public: submit new order (multipart/form-data with optional screenshot)
 export async function POST(request: NextRequest) {
