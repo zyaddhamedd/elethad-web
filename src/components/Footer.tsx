@@ -92,13 +92,13 @@ export default function Footer() {
                   <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-blue-500">
                     <MapPin className="w-4 h-4 md:w-5 md:h-5" />
                   </div>
-                  <span>المنطقة الصناعية، بلوك ب، القاهرة</span>
+                  <span>مول علي الدين،مبني ب،ميدان ليله, قسم ثان 6 أكتوبر، محافظة الجيزة</span>
                 </li>
                 <li className="flex items-center gap-3 md:gap-4 text-slate-400">
                   <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-blue-500">
                     <Phone className="w-4 h-4 md:w-5 md:h-5" />
                   </div>
-                  <span dir="ltr">+20 123 456 7890</span>
+                  <span dir="ltr">+20 100 570 8036</span>
                 </li>
               </ul>
             </div>

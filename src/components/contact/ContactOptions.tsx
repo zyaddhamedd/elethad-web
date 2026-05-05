@@ -11,7 +11,7 @@ const options = [
     desc: "أسرع وسيلة للتواصل مع فريق المبيعات والدعم الفني.",
     icon: <MessageCircle className="w-10 h-10 text-green-500" />,
     cta: "تحدث معنا الآن",
-    href: "https://wa.me/yournumber",
+    href: "https://wa.me/+201005708036",
     color: "hover:border-green-400"
   },
   {
@@ -19,7 +19,7 @@ const options = [
     desc: "تحدث مع أحد خبرائنا فوراً للحصول على استشارة سريعة.",
     icon: <Phone className="w-10 h-10 text-blue-500" />,
     cta: "اتصل بنا",
-    href: "tel:+123456789",
+    href: "tel:+201005708036",
     color: "hover:border-blue-400"
   },
   {

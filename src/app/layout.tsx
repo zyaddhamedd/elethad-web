@@ -1,9 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Cairo } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
 import { CartProvider } from "@/context/CartContext";
-import CartDrawer from "@/components/CartDrawer";
+import SiteShell from "@/components/site/SiteShell";
 
 // ── Font: preload + swap to avoid FOUT blocking render ──────────────────────
 const cairo = Cairo({
@@ -43,9 +42,7 @@ export default function RootLayout({
       </head>
       <body className={`${cairo.variable} font-cairo antialiased bg-slate-50`}>
         <CartProvider>
-          <Navbar />
-          {children}
-          <CartDrawer />
+          <SiteShell>{children}</SiteShell>
         </CartProvider>
       </body>
     </html>

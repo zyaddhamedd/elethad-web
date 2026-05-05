@@ -8,23 +8,14 @@ import Image from "next/image";
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { useCart } from "@/context/CartContext";
-import { products, CATEGORY_MAP } from "@/lib/products";
+import { CATEGORY_MAP } from "@/lib/products";
 import { ProductGridSkeleton } from "@/components/Skeletons";
+import { fetchStorefrontCategories, fetchStorefrontProducts, StorefrontCategory, StorefrontProduct } from "@/lib/storefront-api";
+import { getOptimizedCloudinaryUrl } from "@/lib/utils";
 
 // Lazy-load heavy footer (below fold)
 const Footer = dynamic(() => import("@/components/Footer"), { ssr: true });
 const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: true });
-
-// UI Categories (Label + Slug)
-const CATEGORIES = [
-  { name: "الكل", slug: "all" },
-  { name: "مضخات رفع مياه", slug: "boost-pumps" },
-  { name: "غاطس مياه هولمن", slug: "holmen-submersible" },
-  { name: "غاطس مياه زهر & استانلس", slug: "cast-iron-stainless-submersible" },
-  { name: "غاطس اعماق هولمن", slug: "holmen-deep-well" },
-  { name: "غاطس مياه زهر بالكامل", slug: "full-cast-iron-submersible" },
-  { name: "غاطس مياه استانلس بالكامل", slug: "full-stainless-submersible" },
-];
 
 function ProductsContent() {
   const { addToCart } = useCart();
@@ -33,15 +24,51 @@ function ProductsContent() {
 
   const categoryParam = searchParams.get("category") || "all";
 
+  const [categories, setCategories] = useState<StorefrontCategory[]>([]);
+  const [products, setProducts] = useState<StorefrontProduct[]>([]);
   const [activeCategorySlug, setActiveCategorySlug] = useState(categoryParam);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("موصى به");
   const [isLoading, setIsLoading] = useState(false);
+  const [isCategoriesLoading, setIsCategoriesLoading] = useState(true);
+  const [isProductsLoading, setIsProductsLoading] = useState(true);
 
-  // Sync state with URL
+  // Fetch categories on mount
   useEffect(() => {
-    setActiveCategorySlug(categoryParam);
-  }, [categoryParam]);
+    const loadCategories = async () => {
+      try {
+        const fetchedCategories = await fetchStorefrontCategories();
+        setCategories(fetchedCategories);
+      } catch (error) {
+        console.error("Failed to load categories:", error);
+      } finally {
+        setIsCategoriesLoading(false);
+      }
+    };
+    loadCategories();
+  }, []);
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const fetchedProducts = await fetchStorefrontProducts();
+        setProducts(fetchedProducts);
+      } catch (error) {
+        console.error("Failed to load products:", error);
+      } finally {
+        setIsProductsLoading(false);
+      }
+    };
+
+    loadProducts();
+  }, []);
+
+  const categoryLabelBySlug = useMemo(() => {
+    return categories.reduce<Record<string, string>>((accumulator, category) => {
+      accumulator[category.slug] = category.name;
+      return accumulator;
+    }, {});
+  }, [categories]);
 
   const handleCategoryChange = (slug: string) => {
     setIsLoading(true);
@@ -67,7 +94,9 @@ function ProductsContent() {
       const matchesCategory = normalizedSelectedCat === "all" || normalizedProductCat === normalizedSelectedCat;
       const matchesSearch =
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (CATEGORY_MAP[normalizedProductCat] || "").toLowerCase().includes(searchQuery.toLowerCase());
+        (categoryLabelBySlug[normalizedProductCat] || CATEGORY_MAP[normalizedProductCat] || "")
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     });
 
@@ -76,7 +105,9 @@ function ProductsContent() {
     if (sortBy === "السعر: الأعلى") result = [...result].sort((a, b) => b.price - a.price);
 
     return result;
-  }, [activeCategorySlug, searchQuery, sortBy]);
+  }, [activeCategorySlug, searchQuery, sortBy, products, categoryLabelBySlug]);
+
+  const isGridLoading = isLoading || isCategoriesLoading || isProductsLoading;
 
   return (
     <main className="min-h-screen bg-white selection:bg-blue-100 selection:text-navy pt-20" dir="rtl">
@@ -111,26 +142,54 @@ function ProductsContent() {
             className="flex-1 overflow-x-auto no-scrollbar"
           >
             <div className="flex items-center gap-1.5 w-max">
-              {CATEGORIES.map(category => {
-                const isActive = activeCategorySlug === category.slug;
-                return (
-                  <button
-                    key={category.slug}
-                    onClick={() => handleCategoryChange(category.slug)}
-                    className={`
-                      flex-shrink-0 px-3 py-1 rounded-full
-                      text-[10px] md:text-[11px] font-black whitespace-nowrap
-                      transition-all duration-200 active:scale-95
-                      ${isActive
-                        ? "bg-blue-600 text-white shadow-[0_2px_8px_rgba(37,99,235,0.3)]"
-                        : "bg-slate-100 text-slate-500 hover:bg-slate-200"
-                      }
-                    `}
-                  >
-                    {category.name}
-                  </button>
-                );
-              })}
+              {/* "All" button */}
+              <button
+                onClick={() => handleCategoryChange("all")}
+                className={`
+                  flex-shrink-0 px-3 py-1 rounded-full
+                  text-[10px] md:text-[11px] font-black whitespace-nowrap
+                  transition-all duration-200 active:scale-95
+                  ${activeCategorySlug === "all"
+                    ? "bg-blue-600 text-white shadow-[0_2px_8px_rgba(37,99,235,0.3)]"
+                    : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                  }
+                `}
+              >
+                الكل
+              </button>
+
+              {/* Fetched categories */}
+              {isCategoriesLoading ? (
+                <div className="flex items-center gap-1.5">
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="flex-shrink-0 h-8 w-24 bg-slate-200 rounded-full animate-pulse"
+                    />
+                  ))}
+                </div>
+              ) : (
+                categories.map(category => {
+                  const isActive = activeCategorySlug === category.slug;
+                  return (
+                    <button
+                      key={category.slug}
+                      onClick={() => handleCategoryChange(category.slug)}
+                      className={`
+                        flex-shrink-0 px-3 py-1 rounded-full
+                        text-[10px] md:text-[11px] font-black whitespace-nowrap
+                        transition-all duration-200 active:scale-95
+                        ${isActive
+                          ? "bg-blue-600 text-white shadow-[0_2px_8px_rgba(37,99,235,0.3)]"
+                          : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                        }
+                      `}
+                    >
+                      {category.name}
+                    </button>
+                  );
+                })
+              )}
             </div>
           </div>
         </div>
@@ -173,7 +232,7 @@ function ProductsContent() {
           </div>
 
           {/* Show skeleton while loading category change */}
-          {isLoading ? (
+          {isGridLoading ? (
             <ProductGridSkeleton count={8} />
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
@@ -200,7 +259,7 @@ function ProductsContent() {
                       <div className="flex-grow flex items-center justify-center relative p-4">
                         <div className="relative w-full h-full">
                           <Image
-                            src={product.image}
+                            src={getOptimizedCloudinaryUrl(product.image || product.image_url, 600, "products") || "/products/smart_pump.png"}
                             alt={product.name}
                             fill
                             sizes="(max-width: 768px) 45vw, (max-width: 1024px) 30vw, 22vw"
@@ -212,7 +271,9 @@ function ProductsContent() {
                       </div>
 
                       <div className="p-4 md:p-6 bg-white/60 backdrop-blur-sm rounded-b-2xl md:rounded-b-[2rem] border-t border-slate-100">
-                        <p className="text-[10px] md:text-xs font-black text-slate-400 mb-1">{CATEGORY_MAP[product.category]}</p>
+                        <p className="text-[10px] md:text-xs font-black text-slate-400 mb-1">
+                          {categoryLabelBySlug[product.category] || CATEGORY_MAP[product.category] || product.category}
+                        </p>
                         <h4 className="text-xs md:text-lg font-black text-slate-800 leading-tight mb-2 line-clamp-1">{product.name}</h4>
                         <div className="flex items-center justify-between">
                           <p className="text-sm md:text-xl font-black text-blue-600">{product.price.toLocaleString("ar-EG")} ج.م</p>
@@ -232,7 +293,7 @@ function ProductsContent() {
             </div>
           )}
 
-          {!isLoading && filteredProducts.length === 0 && (
+          {!isGridLoading && filteredProducts.length === 0 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-40 text-center">
               <h3 className="text-3xl font-black text-slate-900 mb-4">لا توجد نتائج</h3>
               <button onClick={() => handleCategoryChange("all")} className="px-8 py-3 bg-blue-600 text-white rounded-full font-black">إعادة ضبط الفلاتر</button>

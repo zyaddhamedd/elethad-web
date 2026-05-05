@@ -10,6 +10,13 @@ const nextConfig: NextConfig = {
     imageSizes: [16, 32, 64, 128, 256, 384],
     // Minimize revalidation for static product images
     minimumCacheTTL: 31536000, // 1 year
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
+    ],
+    qualities: [70, 75, 80, 85],
   },
 
   // ─── Package Import Tree-Shaking ──────────────────────────────────────────
@@ -74,6 +81,9 @@ const nextConfig: NextConfig = {
 
   // ─── Remove X-Powered-By header ──────────────────────────────────────────
   poweredByHeader: false,
+  
+  // ─── Network Access (for mobile testing) ──────────────────────────────────
+  allowedDevOrigins: ['*'],
 };
 
 export default nextConfig;

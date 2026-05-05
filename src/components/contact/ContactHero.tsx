@@ -73,7 +73,7 @@ const ContactHero = () => {
                 </motion.button>
               </Link>
 
-              <Link href="https://wa.me/yournumber" className="w-full md:w-auto" target="_blank" rel="noopener noreferrer">
+              <Link href="https://wa.me/+201005708036" className="w-full md:w-auto" target="_blank" rel="noopener noreferrer">
                 <motion.button
                   whileHover={shouldReduceMotion ? {} : { scale: 1.05, boxShadow: "0 0 30px rgba(34, 197, 94, 0.4)" }}
                   whileTap={{ scale: 0.95 }}

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Clock, Phone, Mail, ChevronDown } from "lucide-react";
 
@@ -85,11 +86,32 @@ const ContactForm = () => {
     service: "",
     message: ""
   });
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formState);
-    alert("تم إرسال رسالتك بنجاح!");
+    setStatus("loading");
+    setErrorMsg("");
+
+    try {
+      const response = await fetch("/api/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formState),
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err?.error || "حدث خطأ أثناء الإرسال");
+      }
+
+      setStatus("success");
+      setFormState({ name: "", phone: "", province: "", service: "", message: "" });
+    } catch (error) {
+      setStatus("error");
+      setErrorMsg(error instanceof Error ? error.message : "حدث خطأ غير متوقع");
+    }
   };
 
   return (
@@ -116,7 +138,8 @@ const ContactForm = () => {
                 </div>
                 <div>
                   <h4 className="font-bold text-white mb-1">العنوان</h4>
-                  <p className="text-slate-400 text-sm leading-relaxed">القاهرة، مدينة نصر، الحي السابع، شارع الطيران</p>
+                  <p className="text-slate-400 text-sm leading-relaxed">
+مول علي الدين،مبني ب،ميدان ليله, قسم ثان 6 أكتوبر، محافظة الجيزة</p>
                 </div>
               </div>
 
@@ -126,8 +149,8 @@ const ContactForm = () => {
                 </div>
                 <div>
                   <h4 className="font-bold text-white mb-1">أرقامنا</h4>
-                  <p className="text-slate-400 text-sm font-mono" dir="ltr">+20 123 456 7890</p>
-                  <p className="text-slate-400 text-sm font-mono" dir="ltr">+20 111 222 3333</p>
+                  <p className="text-slate-400 text-sm font-mono" dir="ltr">+20 100 570 8036</p>
+                  <p className="text-slate-400 text-sm font-mono" dir="ltr">+20 000000000000</p>
                 </div>
               </div>
 
@@ -228,13 +251,46 @@ const ContactForm = () => {
                   ></textarea>
                 </div>
 
+                {/* Status feedback */}
+                <AnimatePresence mode="wait">
+                  {status === "success" && (
+                    <motion.div
+                      key="success"
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className="flex items-center gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-5 py-4 text-emerald-300"
+                    >
+                      <CheckCircle size={20} className="shrink-0" />
+                      <p className="font-bold">تم إرسال رسالتك بنجاح! سنتواصل معك قريباً.</p>
+                    </motion.div>
+                  )}
+                  {status === "error" && (
+                    <motion.div
+                      key="error"
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className="flex items-center gap-3 rounded-2xl border border-rose-500/20 bg-rose-500/10 px-5 py-4 text-rose-300"
+                    >
+                      <AlertCircle size={20} className="shrink-0" />
+                      <p className="font-bold">{errorMsg || "حدث خطأ. يرجى المحاولة مجدداً."}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
                 <motion.button
-                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileHover={{ scale: status === "loading" ? 1 : 1.02, y: status === "loading" ? 0 : -2 }}
                   whileTap={{ scale: 0.98 }}
                   type="submit"
-                  className="w-full py-5 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-black text-xl rounded-2xl shadow-xl shadow-blue-600/20 hover:shadow-blue-600/40 transition-all flex items-center justify-center gap-2"
+                  disabled={status === "loading"}
+                  className="w-full py-5 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-black text-xl rounded-2xl shadow-xl shadow-blue-600/20 hover:shadow-blue-600/40 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  إرسال الطلب
+                  {status === "loading" ? (
+                    <><Loader2 size={22} className="animate-spin" /> جاري الإرسال...</>
+                  ) : (
+                    "إرسال الطلب"
+                  )}
                 </motion.button>
               </form>
             </div>

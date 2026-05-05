@@ -28,23 +28,50 @@ import { ProductDetailSkeleton } from "@/components/Skeletons";
 const Footer = dynamic(() => import("@/components/Footer"), { ssr: true });
 const Navbar = dynamic(() => import("@/components/Navbar"), { ssr: true });
 import { useCart } from "@/context/CartContext";
-import { getProductBySlug, getProductById, Product, CATEGORY_MAP } from "@/lib/products";
+import { CATEGORY_MAP } from "@/lib/products";
+import { fetchStorefrontCategories, fetchStorefrontProduct, StorefrontCategory, StorefrontProduct } from "@/lib/storefront-api";
+import { getOptimizedCloudinaryUrl } from "@/lib/utils";
 
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { addToCart, setBuyNowItem, cartItems } = useCart();
-  const [product, setProduct] = useState<Product | null>(null);
+  const [product, setProduct] = useState<StorefrontProduct | null>(null);
+  const [categories, setCategories] = useState<StorefrontCategory[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isBuying, setIsBuying] = useState(false);
 
   useEffect(() => {
-    const idOrSlug = params.id as string;
-    const foundProduct = getProductBySlug(idOrSlug) || getProductById(idOrSlug);
-    if (foundProduct) setProduct(foundProduct);
+    const loadProduct = async () => {
+      setIsLoading(true);
+
+      try {
+        const idOrSlug = params.id as string;
+        const [fetchedProduct, fetchedCategories] = await Promise.all([
+          fetchStorefrontProduct(idOrSlug),
+          fetchStorefrontCategories(),
+        ]);
+
+        setProduct(fetchedProduct);
+        setCategories(fetchedCategories);
+        setActiveImage(0);
+      } catch (error) {
+        console.error("Failed to load product:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadProduct();
   }, [params.id]);
+
+  const categoryLabelBySlug = categories.reduce<Record<string, string>>((accumulator, category) => {
+    accumulator[category.slug] = category.name;
+    return accumulator;
+  }, {});
 
   const handleBuyNow = () => {
     if (!product) return;
@@ -59,11 +86,11 @@ export default function ProductDetailPage() {
     }, 400);
   };
 
-  if (!product) {
+  if (isLoading || !product) {
     return <ProductDetailSkeleton />;
   }
 
-  const productImages = product.images || [product.image];
+  const productImages = (product.images && product.images.length > 0 ? product.images : [product.image]).filter(Boolean);
   const prevImage = () => setActiveImage((i) => (i - 1 + productImages.length) % productImages.length);
   const nextImage = () => setActiveImage((i) => (i + 1) % productImages.length);
 
@@ -567,7 +594,7 @@ export default function ProductDetailPage() {
                 style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1 }}
               >
                 <Image
-                  src={productImages[activeImage]}
+                  src={getOptimizedCloudinaryUrl(productImages[activeImage] || product.image, 1200, "products") || product.image}
                   alt={product.name}
                   fill
                   className="object-contain"
@@ -633,7 +660,7 @@ export default function ProductDetailPage() {
                   className={`thumb-btn ${activeImage === idx ? "active" : ""}`}
                 >
                   <Image
-                    src={img}
+                    src={getOptimizedCloudinaryUrl(img, 200, "products") || img}
                     alt={`صورة ${idx + 1}`}
                     fill
                     className="object-contain"
@@ -654,7 +681,7 @@ export default function ProductDetailPage() {
           {/* Category + Stock */}
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
             <span style={{ padding: "3px 10px", background: "#eff6ff", color: "#2563eb", fontSize: 10, fontWeight: 900, borderRadius: 999, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-              {CATEGORY_MAP[product.category] || product.category}
+              {categoryLabelBySlug[product.category] || CATEGORY_MAP[product.category] || product.category}
             </span>
             <div style={{ display: "flex", alignItems: "center", gap: 5, color: "#059669", fontSize: 11, fontWeight: 700 }}>
               <span style={{ width: 6, height: 6, background: "#10b981", borderRadius: "50%", display: "inline-block", animation: "pulse 2s infinite" }} />
