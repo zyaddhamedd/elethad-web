@@ -1,7 +1,9 @@
 "use client";
 
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
 import { 
   Package, 
   Settings, 
@@ -10,6 +12,8 @@ import {
   Layers, 
   Headphones 
 } from "lucide-react";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const services = [
   {
@@ -45,58 +49,75 @@ const services = [
 ];
 
 const ServicesGrid = () => {
+  const containerRef = useRef<HTMLElement>(null);
+
+  useGSAP(() => {
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: "top 70%",
+      }
+    });
+
+    tl.fromTo(".section-header > *", 
+      { y: 50, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        stagger: 0.2,
+        ease: "power3.out"
+      }
+    );
+
+    tl.fromTo(".service-card", 
+      { y: 100, opacity: 0, rotationX: 45 },
+      {
+        y: 0,
+        opacity: 1,
+        rotationX: 0,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: "back.out(1.5)",
+        transformOrigin: "bottom center"
+      }, 
+      "-=0.4"
+    );
+  }, { scope: containerRef });
+
   return (
-    <section className="py-24 bg-white relative">
+    <section ref={containerRef} className="py-24 bg-white relative perspective-[1000px]">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-3xl md:text-5xl font-bold text-navy mb-4"
-          >
+        <div className="text-center mb-16 section-header">
+          <h2 className="text-3xl md:text-5xl font-bold text-navy mb-4">
             خدماتنا الشاملة
-          </motion.h2>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-gray-500 max-w-2xl mx-auto"
-          >
+          </h2>
+          <p className="text-gray-500 max-w-2xl mx-auto">
             نحن نغطي كافة احتياجاتك في مجال أنظمة المياه، من الفكرة وحتى التشغيل والدعم المستمر.
-          </motion.p>
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => (
-            <motion.div
+            <div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              whileHover={{ 
-                y: -10,
-                boxShadow: "0 20px 40px rgba(0, 102, 255, 0.1)"
-              }}
-              className="group p-8 rounded-2xl bg-slate-50 border border-slate-100 transition-all duration-300 hover:border-blue-400/50 relative overflow-hidden flex flex-col h-full"
+              className="service-card group p-8 rounded-2xl bg-slate-50 border border-slate-100 transition-all duration-500 hover:border-blue-400/50 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-3 relative overflow-hidden flex flex-col h-full transform-gpu"
             >
               {/* Glow background effect */}
-              <div className="absolute -right-10 -top-10 w-32 h-32 bg-blue-100/50 rounded-full blur-3xl group-hover:bg-blue-400/20 transition-colors" />
+              <div className="absolute -right-10 -top-10 w-32 h-32 bg-blue-100/50 rounded-full blur-3xl group-hover:bg-blue-400/30 transition-colors duration-500 group-hover:scale-150" />
               
-              <div className="mb-6 inline-flex p-4 bg-white rounded-xl box-glow-hover transition-all w-fit">
+              <div className="mb-6 inline-flex p-4 bg-white rounded-xl box-glow-hover transition-all duration-500 w-fit group-hover:-translate-y-2 group-hover:shadow-blue-200">
                 {service.icon}
               </div>
               
-              <h3 className="text-2xl font-bold text-navy mb-4 group-hover:text-blue-600 transition-colors">
+              <h3 className="text-2xl font-bold text-navy mb-4 group-hover:text-blue-600 transition-colors duration-300">
                 {service.title}
               </h3>
               
               <p className="text-gray-600 leading-relaxed text-sm md:text-base">
                 {service.description}
               </p>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

@@ -24,10 +24,7 @@ const ProcessTimeline = dynamic(() => import("@/components/services/ProcessTimel
   ssr: true,
 });
 
-const ProjectsGrid = dynamic(() => import("@/components/services/ProjectsGrid"), {
-  loading: () => <SectionSkeleton height="h-96" />,
-  ssr: true,
-});
+
 
 const Testimonials = dynamic(() => import("@/components/Testimonials"), {
   loading: () => <SectionSkeleton height="h-80" />,
@@ -52,7 +49,7 @@ const ServicesPage = () => {
       <ServicesGrid />
       <WhyChooseUs />
       <ProcessTimeline />
-      <ProjectsGrid />
+
       <Testimonials />
       <FinalCTA />
       <Footer />
