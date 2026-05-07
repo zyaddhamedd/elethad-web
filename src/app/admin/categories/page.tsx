@@ -211,41 +211,43 @@ export default function AdminCategoriesPage() {
 
   return (
     <AdminShell title="الأقسام" subtitle="تنظيم الأقسام يساعد على عرض المحتوى بشكل أوضح للمستخدمين.">
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         <AdminCard>
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <h2 className="text-xl font-black text-white">إدارة الأقسام</h2>
-              <p className="mt-1 text-sm text-slate-400">اتصال مباشر بالخادم مع إضافة وتعديل وحذف فوري.</p>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+            <div className="min-w-0">
+              <h2 className="text-lg sm:text-xl font-black text-white">إدارة الأقسام</h2>
+              <p className="mt-1 text-xs sm:text-sm text-slate-400">اتصال مباشر بالخادم مع إضافة وتعديل وحذف فوري.</p>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
               <AdminButton
                 variant="secondary"
-                icon={<RefreshCw size={16} />}
+                size="sm"
+                icon={<RefreshCw size={14} />}
                 onClick={() => void loadCategories()}
                 disabled={loading}
+                className="flex-shrink-0"
               >
                 تحديث
               </AdminButton>
-              <AdminButton variant="primary" icon={<Plus size={16} />} onClick={openCreateModal}>
+              <AdminButton variant="primary" size="sm" icon={<Plus size={14} />} onClick={openCreateModal} className="flex-shrink-0">
                 إضافة
               </AdminButton>
             </div>
           </div>
 
-          <div className="mt-6">
+          <div className="mt-4 sm:mt-6">
             {loading ? (
-              <div className="rounded-[1.75rem] border border-white/10 bg-white/5 px-6 py-14 text-center text-slate-400">
+              <div className="rounded-[1.75rem] border border-white/10 bg-white/5 px-4 sm:px-6 py-8 sm:py-14 text-center text-slate-400">
                 جاري تحميل الأقسام...
               </div>
             ) : error ? (
-              <div className="rounded-[1.75rem] border border-rose-500/20 bg-rose-500/10 px-6 py-14 text-center text-rose-200">
-                <p className="font-bold">{error}</p>
+              <div className="rounded-[1.75rem] border border-rose-500/20 bg-rose-500/10 px-4 sm:px-6 py-8 sm:py-14 text-center text-rose-200">
+                <p className="font-bold text-sm sm:text-base">{error}</p>
                 <button
                   type="button"
                   onClick={() => void loadCategories()}
-                  className="mt-4 inline-flex items-center rounded-2xl bg-rose-500/15 px-4 py-2 text-sm font-bold text-rose-100 transition-colors hover:bg-rose-500/25"
+                  className="mt-3 sm:mt-4 inline-flex items-center rounded-2xl bg-rose-500/15 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold text-rose-100 transition-colors hover:bg-rose-500/25"
                 >
                   إعادة المحاولة
                 </button>

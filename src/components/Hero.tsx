@@ -1,33 +1,13 @@
 "use client";
 
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
-import Image from "next/image";
-import motorImg from "../../assets/hero.webp";
-import filterImg from "../../assets/hero2.webp";
-import systemImg from "../../assets/hero3.webp";
-import { useState, useEffect, useCallback } from "react";
-
-const images = [motorImg, filterImg, systemImg];
-
-// Duration between auto-slides (ms)
-const SLIDE_INTERVAL = 5000;
+// Use the public folder path for hero video to avoid importing binary as a module
+import { useState } from "react";
 
 export default function Hero() {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const shouldReduceMotion = useReducedMotion();
-
-  // Auto-advance carousel
-  const advance = useCallback(() => {
-    setCurrentImageIndex((prev) => (prev + 1) % images.length);
-  }, []);
-
-  useEffect(() => {
-    if (isHovered) return;
-    const interval = setInterval(advance, SLIDE_INTERVAL);
-    return () => clearInterval(interval);
-  }, [isHovered, advance]);
 
   // ── Shared animation config (disabled when reduced motion is preferred) ──
   const bgBlobTransition = shouldReduceMotion
@@ -93,6 +73,19 @@ export default function Hero() {
         />
       </div>
 
+      {/* Full-bleed video layer (covers entire hero) */}
+      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 5 }} aria-hidden="true">
+        <video
+          src="/assets/hero.mp4"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          className="w-full h-full object-cover"
+        />
+      </div>
+
       {/* Main container */}
       <div className="container mx-auto px-6 relative z-10 w-full h-full max-w-[1400px] flex flex-col-reverse md:block justify-center pt-10 md:pt-0 pb-10 md:pb-0">
 
@@ -155,33 +148,8 @@ export default function Hero() {
               aria-hidden="true"
             />
 
-            {/* Image Carousel */}
-            <div
-              className="relative w-full h-full scale-[1.2] lg:scale-[1.3] xl:scale-[1.4] origin-center z-10"
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-            >
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentImageIndex}
-                  initial={{ opacity: 0, scale: 1.04 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.96 }}
-                  transition={{ duration: 0.6, ease: "easeInOut" }}
-                  className="absolute inset-0"
-                >
-                  <Image
-                    src={images[currentImageIndex]}
-                    alt="معدات مياه عالية الكفاءة"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-contain drop-shadow-[0_40px_50px_rgba(0,0,0,0.25)]"
-                    priority={currentImageIndex === 0}
-                    quality={85}
-                  />
-                </motion.div>
-              </AnimatePresence>
-            </div>
+            {/* Decorative motor area (video now full-bleed behind page) */}
+            <div className="relative w-full h-full scale-[1.02] lg:scale-[1.05] origin-center z-10" />
           </div>
         </motion.div>
       </div>

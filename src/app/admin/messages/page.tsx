@@ -148,28 +148,30 @@ export default function AdminMessagesPage() {
 
   return (
     <AdminShell title="الرسائل" subtitle="رسائل العملاء والمهتمين في مكان واحد بطريقة واضحة ومرتبة.">
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         <AdminCard>
           {/* ── Header ── */}
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <h2 className="text-xl font-black text-white">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+            <div className="min-w-0">
+              <h2 className="text-lg sm:text-xl font-black text-white">
                 صندوق الرسائل
                 {newCount > 0 && (
-                  <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-xs font-black text-white">
+                  <span className="mr-2 inline-flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full bg-blue-500 text-[10px] sm:text-xs font-black text-white">
                     {newCount}
                   </span>
                 )}
               </h2>
-              <p className="mt-1 text-sm text-slate-400">
+              <p className="mt-1 text-xs sm:text-sm text-slate-400">
                 الرسائل الواردة من صفحة تواصل معنا مباشرةً.
               </p>
             </div>
 
             <AdminButton
               variant="ghost"
-              icon={<RefreshCw size={16} />}
+              size="sm"
+              icon={<RefreshCw size={14} />}
               onClick={loadMessages}
+              className="flex-shrink-0"
             >
               تحديث
             </AdminButton>
@@ -178,7 +180,7 @@ export default function AdminMessagesPage() {
           {/* ── Feedback banner ── */}
           {(statusMessage || errorMessage) && (
             <div
-              className={`mt-4 rounded-2xl border px-4 py-3 text-sm ${
+              className={`mt-3 sm:mt-4 rounded-2xl border px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm ${
                 errorMessage
                   ? "border-rose-500/20 bg-rose-500/10 text-rose-200"
                   : "border-emerald-500/20 bg-emerald-500/10 text-emerald-200"
@@ -189,25 +191,25 @@ export default function AdminMessagesPage() {
           )}
 
           {/* ── Body ── */}
-          <div className="mt-6">
+          <div className="mt-4 sm:mt-6">
             {isLoading ? (
-              <div className="rounded-[1.75rem] border border-white/10 bg-white/5 px-6 py-10 text-center text-slate-400">
+              <div className="rounded-[1.75rem] border border-white/10 bg-white/5 px-4 sm:px-6 py-8 sm:py-10 text-center text-slate-400">
                 جاري تحميل الرسائل...
               </div>
             ) : messages.length === 0 ? (
-              <div className="flex flex-col items-center gap-4 rounded-[1.75rem] border border-white/10 bg-white/5 px-6 py-16 text-center">
-                <MessageSquare size={40} className="text-slate-600" />
-                <p className="text-slate-400 font-bold">لا توجد رسائل بعد</p>
-                <p className="text-slate-500 text-sm">
+              <div className="flex flex-col items-center gap-3 sm:gap-4 rounded-[1.75rem] border border-white/10 bg-white/5 px-4 sm:px-6 py-12 sm:py-16 text-center">
+                <MessageSquare size={36} className="sm:w-10 sm:h-10 text-slate-600" />
+                <p className="text-slate-400 font-bold text-sm sm:text-base">لا توجد رسائل بعد</p>
+                <p className="text-slate-500 text-xs sm:text-sm">
                   ستظهر هنا الرسائل التي يرسلها العملاء من صفحة تواصل معنا.
                 </p>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {messages.map((msg) => (
                   <div
                     key={msg.id}
-                    className={`group relative flex items-start justify-between gap-4 rounded-2xl border p-4 transition-all duration-200 ${
+                    className={`group relative flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4 rounded-2xl border p-3 sm:p-4 transition-all duration-200 ${
                       msg.status === "new"
                         ? "border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10"
                         : "border-white/10 bg-white/5 hover:bg-white/8"
@@ -215,74 +217,81 @@ export default function AdminMessagesPage() {
                   >
                     {/* New indicator */}
                     {msg.status === "new" && (
-                      <span className="absolute right-4 top-4 h-2 w-2 animate-pulse rounded-full bg-blue-400" />
+                      <span className="absolute right-3 sm:right-4 top-3 sm:top-4 h-2 w-2 animate-pulse rounded-full bg-blue-400" />
                     )}
 
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-3 mb-2">
-                        <span className="font-black text-white">{msg.name}</span>
+                    <div className="min-w-0 flex-1 pr-3 sm:pr-0">
+                      <div className="flex flex-wrap items-center gap-2 mb-1 sm:mb-2">
+                        <span className="font-black text-white text-sm line-clamp-1">{msg.name}</span>
                         <StatusBadge status={msg.status} />
-                        <span className="text-xs text-slate-500 flex items-center gap-1">
-                          <Clock size={11} />
-                          {formatDate(msg.created_at)}
-                        </span>
                       </div>
 
-                      <div className="flex flex-wrap gap-4 text-xs text-slate-400">
-                        <span className="flex items-center gap-1.5">
-                          <Phone size={11} />
-                          <span dir="ltr">{msg.phone}</span>
+                      <span className="text-[10px] sm:text-xs text-slate-500 flex items-center gap-1 mb-2 sm:mb-1">
+                        <Clock size={10} className="sm:w-3 sm:h-3" />
+                        {formatDate(msg.created_at)}
+                      </span>
+
+                      <div className="flex flex-wrap gap-2 sm:gap-4 text-[10px] sm:text-xs text-slate-400 mb-2">
+                        <span className="flex items-center gap-1">
+                          <Phone size={10} className="sm:w-3 sm:h-3" />
+                          <span dir="ltr" className="truncate">{msg.phone}</span>
                         </span>
                         {msg.province && (
-                          <span className="flex items-center gap-1.5">
-                            <MapPin size={11} />
+                          <span className="flex items-center gap-1 truncate">
+                            <MapPin size={10} className="sm:w-3 sm:h-3 flex-shrink-0" />
                             {msg.province}
                           </span>
                         )}
                         {msg.service && (
-                          <span className="flex items-center gap-1.5">
-                            <Wrench size={11} />
+                          <span className="flex items-center gap-1 truncate">
+                            <Wrench size={10} className="sm:w-3 sm:h-3 flex-shrink-0" />
                             {msg.service}
                           </span>
                         )}
                       </div>
 
                       {msg.message && (
-                        <p className="mt-2 line-clamp-1 text-sm text-slate-400">
+                        <p className="line-clamp-1 text-xs sm:text-sm text-slate-400">
                           {msg.message}
                         </p>
                       )}
                     </div>
 
                     {/* Actions */}
-                    <div className="flex shrink-0 items-center gap-2">
+                    <div className="flex shrink-0 items-center gap-1 sm:gap-2 flex-wrap">
                       <AdminButton
                         variant="secondary"
-                        className="px-3 py-2 text-xs"
-                        icon={<Eye size={13} />}
+                        size="sm"
+                        className="px-2.5 sm:px-3 text-[10px] sm:text-xs"
+                        icon={<Eye size={12} />}
                         onClick={() => handleOpenMessage(msg)}
                       >
-                        عرض
+                        <span className="hidden sm:inline">عرض</span>
+                        <span className="sm:hidden">عرض</span>
                       </AdminButton>
 
                       {msg.status !== "replied" && (
                         <AdminButton
                           variant="ghost"
-                          className="px-3 py-2 text-xs text-emerald-400 hover:text-emerald-300"
-                          icon={<CheckCheck size={13} />}
+                          size="sm"
+                          className="px-2.5 sm:px-3 text-[10px] sm:text-xs text-emerald-400 hover:text-emerald-300"
+                          icon={<CheckCheck size={12} />}
                           onClick={() => updateStatus(msg.id, "replied")}
                         >
-                          تم الرد
+                          <span className="hidden sm:inline">تم الرد</span>
+                          <span className="sm:hidden">✓</span>
                         </AdminButton>
                       )}
 
                       <AdminButton
                         variant="danger"
-                        className="px-3 py-2 text-xs"
-                        icon={<Trash2 size={13} />}
+                        size="sm"
+                        className="px-2.5 sm:px-3 text-[10px] sm:text-xs"
+                        icon={<Trash2 size={12} />}
                         onClick={() => deleteMessage(msg.id)}
                       >
-                        حذف
+                        <span className="hidden sm:inline">حذف</span>
+                        <span className="sm:hidden">حذف</span>
                       </AdminButton>
                     </div>
                   </div>
@@ -301,15 +310,15 @@ export default function AdminMessagesPage() {
           title="تفاصيل الرسالة"
           description={`من: ${selectedMessage.name} · ${formatDate(selectedMessage.created_at)}`}
         >
-          <div className="space-y-5">
+          <div className="space-y-3 sm:space-y-5">
             {/* Status row */}
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               <StatusBadge status={selectedMessage.status} />
-              <div className="flex gap-2">
+              <div className="flex gap-1 sm:gap-2 flex-wrap">
                 {selectedMessage.status !== "read" && (
                   <button
                     onClick={() => updateStatus(selectedMessage.id, "read")}
-                    className="rounded-xl border border-amber-500/20 bg-amber-500/10 px-3 py-1.5 text-xs font-bold text-amber-300 hover:bg-amber-500/20 transition"
+                    className="rounded-xl border border-amber-500/20 bg-amber-500/10 px-2.5 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-bold text-amber-300 hover:bg-amber-500/20 transition"
                   >
                     تمت القراءة
                   </button>
@@ -317,7 +326,7 @@ export default function AdminMessagesPage() {
                 {selectedMessage.status !== "replied" && (
                   <button
                     onClick={() => updateStatus(selectedMessage.id, "replied")}
-                    className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-xs font-bold text-emerald-300 hover:bg-emerald-500/20 transition"
+                    className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-2.5 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-bold text-emerald-300 hover:bg-emerald-500/20 transition"
                   >
                     تم الرد
                   </button>
@@ -326,41 +335,43 @@ export default function AdminMessagesPage() {
             </div>
 
             {/* Info grid */}
-            <div className="grid gap-3 sm:grid-cols-2">
-              <InfoRow icon={<Mail size={14} />} label="الاسم" value={selectedMessage.name} />
-              <InfoRow icon={<Phone size={14} />} label="الهاتف" value={selectedMessage.phone} dir="ltr" />
+            <div className="grid gap-2 sm:gap-3 grid-cols-1 sm:grid-cols-2">
+              <InfoRow icon={<Mail size={13} className="sm:w-3.5 sm:h-3.5" />} label="الاسم" value={selectedMessage.name} />
+              <InfoRow icon={<Phone size={13} className="sm:w-3.5 sm:h-3.5" />} label="الهاتف" value={selectedMessage.phone} dir="ltr" />
               {selectedMessage.province && (
-                <InfoRow icon={<MapPin size={14} />} label="المحافظة" value={selectedMessage.province} />
+                <InfoRow icon={<MapPin size={13} className="sm:w-3.5 sm:h-3.5" />} label="المحافظة" value={selectedMessage.province} />
               )}
               {selectedMessage.service && (
-                <InfoRow icon={<Wrench size={14} />} label="الخدمة المطلوبة" value={selectedMessage.service} />
+                <InfoRow icon={<Wrench size={13} className="sm:w-3.5 sm:h-3.5" />} label="الخدمة المطلوبة" value={selectedMessage.service} />
               )}
             </div>
 
             {/* Message body */}
             {selectedMessage.message && (
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                <p className="mb-2 text-xs font-bold text-slate-400">نص الرسالة</p>
-                <p className="whitespace-pre-wrap text-sm text-slate-200 leading-relaxed">
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-3 sm:p-4">
+                <p className="mb-2 sm:mb-3 text-[10px] sm:text-xs font-bold text-slate-400">نص الرسالة</p>
+                <p className="whitespace-pre-wrap text-xs sm:text-sm text-slate-200 leading-relaxed">
                   {selectedMessage.message}
                 </p>
               </div>
             )}
 
             {/* Quick actions */}
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 border-t border-white/10 pt-3 sm:pt-4">
               <a
                 href={`tel:${selectedMessage.phone}`}
-                className="inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-blue-500 transition"
+                className="inline-flex items-center justify-center sm:justify-start gap-2 rounded-2xl bg-blue-600 px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-bold text-white hover:bg-blue-500 transition flex-1 sm:flex-none"
               >
-                <Phone size={15} />
-                اتصال الآن
+                <Phone size={13} />
+                <span>اتصال الآن</span>
               </a>
 
               <AdminButton
                 variant="danger"
-                icon={<Trash2 size={14} />}
+                size="sm"
+                icon={<Trash2 size={13} />}
                 onClick={() => deleteMessage(selectedMessage.id)}
+                className="flex-1 sm:flex-none"
               >
                 حذف الرسالة
               </AdminButton>
@@ -387,12 +398,12 @@ function InfoRow({
   dir?: string;
 }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-      <p className="mb-1 flex items-center gap-1.5 text-xs font-bold text-slate-400">
+    <div className="rounded-xl border border-white/10 bg-white/5 p-2.5 sm:p-3">
+      <p className="mb-1 flex items-center gap-1 text-[10px] sm:text-xs font-bold text-slate-400">
         {icon}
         {label}
       </p>
-      <p className="text-sm font-bold text-white" dir={dir}>
+      <p className="text-xs sm:text-sm font-bold text-white break-words" dir={dir}>
         {value}
       </p>
     </div>

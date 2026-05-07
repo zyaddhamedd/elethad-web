@@ -157,41 +157,41 @@ export default function AdminOrdersPage() {
 
   return (
     <AdminShell title="الطلبات" subtitle="متابعة الطلبات، تعديل الحالة، وإدارة دورة البيع بسهولة.">
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         <AdminCard>
           {/* Header */}
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <h2 className="text-xl font-black text-white">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+            <div className="min-w-0">
+              <h2 className="text-lg sm:text-xl font-black text-white">
                 قائمة الطلبات
                 {pendingCount > 0 && (
-                  <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-amber-500 text-xs font-black text-white">
+                  <span className="mr-2 inline-flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full bg-amber-500 text-[10px] sm:text-xs font-black text-white">
                     {pendingCount}
                   </span>
                 )}
               </h2>
-              <p className="mt-1 text-sm text-slate-400">جميع الطلبات الواردة من الموقع مباشرةً.</p>
+              <p className="mt-1 text-xs sm:text-sm text-slate-400">جميع الطلبات الواردة من الموقع مباشرةً.</p>
             </div>
-            <AdminButton variant="ghost" icon={<RefreshCw size={16} />} onClick={loadOrders}>
+            <AdminButton variant="ghost" size="sm" icon={<RefreshCw size={14} />} onClick={loadOrders} className="flex-shrink-0">
               تحديث
             </AdminButton>
           </div>
 
           {/* Filter tabs */}
-          <div className="mt-5 flex gap-2 flex-wrap">
+          <div className="mt-3 sm:mt-5 flex gap-1.5 sm:gap-2 flex-wrap">
             {(["all", "cash", "instapay"] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setFilter(tab)}
-                className={`flex items-center gap-1.5 rounded-2xl border px-4 py-2 text-xs font-bold transition-all ${
+                className={`flex items-center gap-1 rounded-2xl border px-2.5 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-xs font-bold transition-all ${
                   filter === tab
                     ? "border-blue-500/30 bg-blue-500/15 text-blue-300"
                     : "border-white/10 bg-white/5 text-slate-400 hover:bg-white/10"
                 }`}
               >
-                {tab === "all" && <Package size={13} />}
-                {tab === "cash" && <Banknote size={13} />}
-                {tab === "instapay" && <Smartphone size={13} />}
+                {tab === "all" && <Package size={12} />}
+                {tab === "cash" && <Banknote size={12} />}
+                {tab === "instapay" && <Smartphone size={12} />}
                 {tab === "all" ? "الكل" : tab === "cash" ? "كاش" : "InstaPay"}
               </button>
             ))}
@@ -199,28 +199,28 @@ export default function AdminOrdersPage() {
 
           {/* Feedback */}
           {(statusMessage || errorMessage) && (
-            <div className={`mt-4 rounded-2xl border px-4 py-3 text-sm ${errorMessage ? "border-rose-500/20 bg-rose-500/10 text-rose-200" : "border-emerald-500/20 bg-emerald-500/10 text-emerald-200"}`}>
+            <div className={`mt-3 sm:mt-4 rounded-2xl border px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm ${errorMessage ? "border-rose-500/20 bg-rose-500/10 text-rose-200" : "border-emerald-500/20 bg-emerald-500/10 text-emerald-200"}`}>
               {errorMessage || statusMessage}
             </div>
           )}
 
           {/* List */}
-          <div className="mt-6">
+          <div className="mt-4 sm:mt-6">
             {isLoading ? (
-              <div className="rounded-[1.75rem] border border-white/10 bg-white/5 px-6 py-10 text-center text-slate-400">
+              <div className="rounded-[1.75rem] border border-white/10 bg-white/5 px-4 sm:px-6 py-8 sm:py-10 text-center text-slate-400">
                 جاري تحميل الطلبات...
               </div>
             ) : orders.length === 0 ? (
-              <div className="flex flex-col items-center gap-4 rounded-[1.75rem] border border-white/10 bg-white/5 px-6 py-16 text-center">
-                <ShoppingBag size={40} className="text-slate-600" />
-                <p className="text-slate-400 font-bold">لا توجد طلبات بعد</p>
+              <div className="flex flex-col items-center gap-3 sm:gap-4 rounded-[1.75rem] border border-white/10 bg-white/5 px-4 sm:px-6 py-12 sm:py-16 text-center">
+                <ShoppingBag size={36} className="sm:w-10 sm:h-10 text-slate-600" />
+                <p className="text-slate-400 font-bold text-sm sm:text-base">لا توجد طلبات بعد</p>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {orders.map((order) => (
                   <div
                     key={order.id}
-                    className={`relative flex flex-wrap items-start justify-between gap-4 rounded-2xl border p-4 transition-all ${
+                    className={`relative flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4 rounded-2xl border p-3 sm:p-4 transition-all ${
                       order.status === "pending"
                         ? "border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10"
                         : "border-white/10 bg-white/5 hover:bg-white/8"
@@ -228,26 +228,30 @@ export default function AdminOrdersPage() {
                   >
                     {/* Left info */}
                     <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                        <span className="font-black text-white">#{String(order.id).padStart(4, "0")}</span>
-                        <span className="font-bold text-slate-300">— {order.customer_name}</span>
+                      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+                        <span className="font-black text-white text-sm">#{String(order.id).padStart(4, "0")}</span>
+                        <span className="font-bold text-slate-300 text-xs sm:text-sm truncate">— {order.customer_name}</span>
                         <PaymentBadge method={order.payment_method} />
                         <StatusBadge status={order.status} />
                       </div>
-                      <div className="flex flex-wrap gap-4 text-xs text-slate-400">
-                        <span className="flex items-center gap-1.5"><Phone size={11} /><span dir="ltr">{order.phone}</span></span>
-                        <span className="flex items-center gap-1.5"><MapPin size={11} />{order.governorate}</span>
-                        <span className="flex items-center gap-1.5"><Clock size={11} />{formatDate(order.created_at)}</span>
-                        <span className="font-black text-white">{order.total.toLocaleString("ar-EG")} ج.م</span>
+                      <div className="flex flex-wrap gap-2 sm:gap-4 text-[10px] sm:text-xs text-slate-400">
+                        <span className="flex items-center gap-1"><Phone size={10} className="sm:w-3 sm:h-3" /><span dir="ltr" className="truncate">{order.phone}</span></span>
+                        <span className="flex items-center gap-1"><MapPin size={10} className="sm:w-3 sm:h-3" />{order.governorate}</span>
+                        <span className="flex items-center gap-1 hidden sm:flex"><Clock size={10} />{formatDate(order.created_at)}</span>
+                        <span className="font-black text-white text-xs sm:text-sm">{order.total.toLocaleString("ar-EG")} ج.م</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-[10px] text-slate-500 mt-1 sm:hidden">
+                        <Clock size={9} />{formatDate(order.created_at)}
                       </div>
                     </div>
 
                     {/* Actions */}
-                    <div className="flex shrink-0 items-center gap-2">
-                      <AdminButton variant="secondary" className="px-3 py-2 text-xs" icon={<Eye size={13} />} onClick={() => setSelectedOrder(order)}>
-                        عرض
+                    <div className="flex shrink-0 items-center gap-1 sm:gap-2 flex-wrap">
+                      <AdminButton variant="secondary" size="sm" className="px-2.5 sm:px-3 text-[10px] sm:text-xs" icon={<Eye size={12} />} onClick={() => setSelectedOrder(order)}>
+                        <span className="hidden sm:inline">عرض</span>
+                        <span className="sm:hidden">عرض</span>
                       </AdminButton>
-                      <AdminButton variant="danger" className="px-3 py-2 text-xs" icon={<Trash2 size={13} />} onClick={() => deleteOrder(order.id)}>
+                      <AdminButton variant="danger" size="sm" className="px-2.5 sm:px-3 text-[10px] sm:text-xs" icon={<Trash2 size={12} />} onClick={() => deleteOrder(order.id)}>
                         حذف
                       </AdminButton>
                     </div>
@@ -296,7 +300,7 @@ export default function AdminOrdersPage() {
             </div>
 
             {/* Customer info */}
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-2 sm:gap-3 grid-cols-1 sm:grid-cols-2">
               <InfoRow label="الاسم" value={selectedOrder.customer_name} />
               <InfoRow label="الهاتف" value={selectedOrder.phone} dir="ltr" />
               <InfoRow label="المحافظة" value={selectedOrder.governorate} />
@@ -304,18 +308,18 @@ export default function AdminOrdersPage() {
             </div>
 
             {/* Order items */}
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p className="mb-3 text-xs font-bold text-slate-400">المنتجات ({selectedOrder.items.length})</p>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-3 sm:p-4">
+              <p className="mb-2 sm:mb-3 text-[10px] sm:text-xs font-bold text-slate-400">المنتجات ({selectedOrder.items.length})</p>
               <div className="space-y-2">
                 {selectedOrder.items.map((item, i) => (
-                  <div key={i} className="flex items-center justify-between gap-3 rounded-xl bg-white/5 px-3 py-2">
-                    <span className="text-sm font-bold text-white line-clamp-1 flex-1">{item.name}</span>
-                    <span className="text-xs text-slate-400 shrink-0">× {item.quantity}</span>
-                    <span className="text-sm font-black text-blue-400 shrink-0">{(item.price * item.quantity).toLocaleString("ar-EG")} ج.م</span>
+                  <div key={i} className="flex items-center justify-between gap-2 rounded-xl bg-white/5 px-2 sm:px-3 py-1.5 sm:py-2">
+                    <span className="text-xs sm:text-sm font-bold text-white line-clamp-1 flex-1">{item.name}</span>
+                    <span className="text-[10px] sm:text-xs text-slate-400 shrink-0">× {item.quantity}</span>
+                    <span className="text-xs sm:text-sm font-black text-blue-400 shrink-0">{(item.price * item.quantity).toLocaleString("ar-EG")} ج.م</span>
                   </div>
                 ))}
               </div>
-              <div className="mt-3 flex justify-between border-t border-white/10 pt-3 text-sm font-black text-white">
+              <div className="mt-2 sm:mt-3 flex justify-between border-t border-white/10 pt-2 sm:pt-3 text-xs sm:text-sm font-black text-white">
                 <span>الإجمالي</span>
                 <span>{selectedOrder.total.toLocaleString("ar-EG")} ج.م</span>
               </div>
@@ -323,9 +327,9 @@ export default function AdminOrdersPage() {
 
             {/* InstaPay screenshot */}
             {selectedOrder.payment_method === "instapay" && (
-              <div className="rounded-2xl border border-purple-500/20 bg-purple-500/10 p-4">
-                <p className="mb-3 text-xs font-bold text-purple-300 flex items-center gap-2">
-                  <Smartphone size={13} /> إيصال التحويل عبر InstaPay
+              <div className="rounded-2xl border border-purple-500/20 bg-purple-500/10 p-3 sm:p-4">
+                <p className="mb-2 sm:mb-3 text-[10px] sm:text-xs font-bold text-purple-300 flex items-center gap-2">
+                  <Smartphone size={12} className="sm:w-3.5 sm:h-3.5" /> إيصال التحويل عبر InstaPay
                 </p>
                 {selectedOrder.payment_screenshot_url ? (
                   <>
@@ -338,26 +342,26 @@ export default function AdminOrdersPage() {
                         alt="إيصال InstaPay"
                         width={600}
                         height={400}
-                        className="w-full max-h-60 object-contain"
+                        className="w-full max-h-48 sm:max-h-60 object-contain"
                         unoptimized
                       />
                       <div className="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/30 transition">
-                        <span className="opacity-0 hover:opacity-100 text-white text-xs font-black bg-black/60 px-3 py-1.5 rounded-lg">عرض كامل</span>
+                        <span className="opacity-0 hover:opacity-100 text-white text-[10px] sm:text-xs font-black bg-black/60 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg">عرض كامل</span>
                       </div>
                     </div>
-                    <p className="mt-2 text-[10px] text-purple-400 font-bold">اضغط على الصورة لعرضها بالحجم الكامل</p>
+                    <p className="mt-2 text-[9px] sm:text-[10px] text-purple-400 font-bold">اضغط على الصورة لعرضها بالحجم الكامل</p>
                   </>
                 ) : (
-                  <div className="flex items-center gap-2 text-slate-400 text-xs font-bold">
-                    <ImageIcon size={14} /> لم يتم رفع صورة الإيصال
+                  <div className="flex items-center gap-2 text-slate-400 text-[10px] sm:text-xs font-bold">
+                    <ImageIcon size={13} /> لم يتم رفع صورة الإيصال
                   </div>
                 )}
               </div>
             )}
 
             {/* Delete */}
-            <div className="flex justify-end border-t border-white/10 pt-4">
-              <AdminButton variant="danger" icon={<Trash2 size={14} />} onClick={() => deleteOrder(selectedOrder.id)}>
+            <div className="flex justify-end border-t border-white/10 pt-3 sm:pt-4">
+              <AdminButton variant="danger" size="sm" icon={<Trash2 size={13} />} onClick={() => deleteOrder(selectedOrder.id)}>
                 حذف الطلب
               </AdminButton>
             </div>
@@ -368,7 +372,7 @@ export default function AdminOrdersPage() {
       {/* ── Full-screen screenshot lightbox ── */}
       {screenshotOpen && selectedOrder?.payment_screenshot_url && (
         <div
-          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 p-4"
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 p-3 sm:p-4"
           onClick={() => setScreenshotOpen(false)}
         >
           <Image
@@ -380,7 +384,7 @@ export default function AdminOrdersPage() {
             unoptimized
             onClick={(e) => e.stopPropagation()}
           />
-          <button onClick={() => setScreenshotOpen(false)} className="absolute top-4 left-4 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white font-black text-lg transition">
+          <button onClick={() => setScreenshotOpen(false)} className="absolute top-2 sm:top-4 left-2 sm:left-4 w-8 sm:w-10 h-8 sm:h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white font-black text-sm sm:text-lg transition flex-shrink-0">
             ✕
           </button>
         </div>
@@ -391,9 +395,9 @@ export default function AdminOrdersPage() {
 
 function InfoRow({ label, value, dir }: { label: string; value: string; dir?: string }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-      <p className="mb-1 text-xs font-bold text-slate-400">{label}</p>
-      <p className="text-sm font-bold text-white" dir={dir}>{value}</p>
+    <div className="rounded-xl border border-white/10 bg-white/5 p-2.5 sm:p-3">
+      <p className="mb-1 text-[10px] sm:text-xs font-bold text-slate-400">{label}</p>
+      <p className="text-xs sm:text-sm font-bold text-white break-words" dir={dir}>{value}</p>
     </div>
   );
 }

@@ -163,35 +163,35 @@ export default function AdminDashboardPage() {
 
   return (
     <AdminShell title="الرئيسية" subtitle="نظرة عامة سريعة على حالة المتجر والطلبات والرسائل.">
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
 
         {/* ── Stat cards ── */}
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
           {statCards.map((stat) => {
             const Icon = stat.icon;
             const card = (
               <AdminCard key={stat.label} className="relative overflow-hidden cursor-default">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(59,130,246,0.16),_transparent_55%)]" />
-                <div className="relative flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-sm text-slate-400">{stat.label}</p>
-                    <div className="mt-3 text-3xl font-black text-white">
-                      {isLoading ? <span className="text-slate-600 text-2xl">—</span> : stat.value}
+                <div className="relative flex flex-col items-start justify-between gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-500/15 text-blue-300 ring-1 ring-blue-500/20 flex-shrink-0">
+                    <Icon size={18} />
+                  </div>
+                  <div className="w-full">
+                    <p className="text-xs sm:text-sm text-slate-400 line-clamp-2">{stat.label}</p>
+                    <div className="mt-2 text-2xl sm:text-3xl font-black text-white">
+                      {isLoading ? <span className="text-slate-600 text-xl">—</span> : stat.value}
                     </div>
                     {stat.alert ? (
-                      <p className={`mt-2 inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-bold ${stat.alertColor}`}>
-                        <ArrowUpRight size={12} />
-                        {stat.alert}
+                      <p className={`mt-2 inline-flex items-center gap-1 rounded-full border px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold ${stat.alertColor}`}>
+                        <ArrowUpRight size={10} />
+                        <span className="line-clamp-1">{stat.alert}</span>
                       </p>
                     ) : (
-                      <p className="mt-2 inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-bold text-emerald-300">
-                        <ArrowUpRight size={12} />
+                      <p className="mt-2 inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold text-emerald-300">
+                        <ArrowUpRight size={10} />
                         محدّث الآن
                       </p>
                     )}
-                  </div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-500/15 text-blue-300 ring-1 ring-blue-500/20">
-                    <Icon size={20} />
                   </div>
                 </div>
               </AdminCard>
@@ -209,78 +209,90 @@ export default function AdminDashboardPage() {
 
         {/* ── Recent orders ── */}
         <AdminCard>
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <h2 className="text-xl font-black text-white">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+            <div className="min-w-0">
+              <h2 className="text-lg sm:text-xl font-black text-white">
                 الطلبات الأخيرة
                 {stats.pendingOrders > 0 && (
-                  <span className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-amber-500 text-xs font-black text-white">
+                  <span className="mr-2 inline-flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full bg-amber-500 text-[10px] sm:text-xs font-black text-white">
                     {stats.pendingOrders}
                   </span>
                 )}
               </h2>
-              <p className="mt-1 text-sm text-slate-400">آخر 5 طلبات واردة من الموقع.</p>
+              <p className="mt-1 text-xs sm:text-sm text-slate-400">آخر 5 طلبات واردة من الموقع.</p>
             </div>
-            <div className="flex items-center gap-2">
-              <AdminButton variant="ghost" icon={<RefreshCw size={15} />} onClick={loadDashboard}>
+            <div className="flex items-center gap-2 flex-wrap">
+              <AdminButton variant="ghost" size="sm" icon={<RefreshCw size={14} />} onClick={loadDashboard}>
                 تحديث
               </AdminButton>
               <Link href="/admin/orders">
-                <AdminButton variant="secondary">عرض الكل</AdminButton>
+                <AdminButton variant="secondary" size="sm">عرض الكل</AdminButton>
               </Link>
             </div>
           </div>
 
-          <div className="mt-6">
+          <div className="mt-4 sm:mt-6">
             {isLoading ? (
-              <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-10 text-center text-slate-400">
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 sm:px-6 py-8 sm:py-10 text-center text-slate-400">
                 جاري التحميل...
               </div>
             ) : recentOrders.length === 0 ? (
-              <div className="flex flex-col items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-6 py-12 text-center">
-                <ShoppingBag size={36} className="text-slate-600" />
-                <p className="text-slate-400 font-bold">لا توجد طلبات بعد</p>
-                <p className="text-slate-500 text-sm">ستظهر هنا الطلبات الجديدة فور وصولها.</p>
+              <div className="flex flex-col items-center gap-2 sm:gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 sm:px-6 py-8 sm:py-12 text-center">
+                <ShoppingBag size={32} className="sm:w-9 sm:h-9 text-slate-600" />
+                <p className="text-slate-400 font-bold text-sm sm:text-base">لا توجد طلبات بعد</p>
+                <p className="text-slate-500 text-xs sm:text-sm">ستظهر هنا الطلبات الجديدة فور وصولها.</p>
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-2 sm:space-y-3">
                 {recentOrders.map((order) => (
                   <div
                     key={order.id}
-                    className={`flex flex-wrap items-center justify-between gap-3 rounded-2xl border p-4 transition-all ${
+                    className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 rounded-2xl border p-3 sm:p-4 transition-all ${
                       order.status === "pending"
                         ? "border-amber-500/30 bg-amber-500/5"
                         : "border-white/10 bg-white/5"
                     }`}
                   >
                     {/* Order info */}
-                    <div className="flex flex-wrap items-center gap-3 min-w-0">
-                      <span className="font-black text-white text-sm">
+                    <div className="flex flex-wrap items-center gap-2 min-w-0">
+                      <span className="font-black text-white text-xs sm:text-sm flex-shrink-0">
                         #{String(order.id).padStart(4, "0")}
                       </span>
-                      <span className="text-slate-300 font-bold text-sm truncate max-w-[140px]">
+                      <span className="text-slate-300 font-bold text-xs sm:text-sm truncate max-w-[130px] sm:max-w-none">
                         {order.customer_name}
                       </span>
-                      <PaymentBadge method={order.payment_method} />
-                      <StatusBadge status={order.status} />
+                      <div className="flex gap-1 flex-wrap">
+                        <PaymentBadge method={order.payment_method} />
+                        <StatusBadge status={order.status} />
+                      </div>
                     </div>
 
                     {/* Right side */}
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-4">
                       <div className="text-right hidden sm:block">
-                        <p className="font-black text-white text-sm">{order.total.toLocaleString("ar-EG")} ج.م</p>
+                        <p className="font-black text-white text-xs sm:text-sm">{order.total.toLocaleString("ar-EG")} ج.م</p>
                         <p className="text-[10px] text-slate-500 flex items-center gap-1 justify-end">
                           <Clock size={9} />{formatDate(order.created_at)}
                         </p>
                       </div>
                       <AdminButton
                         variant="secondary"
-                        className="px-3 py-2 text-xs shrink-0"
-                        icon={<Eye size={13} />}
+                        size="sm"
+                        className="px-2.5 sm:px-3 text-[10px] sm:text-xs shrink-0"
+                        icon={<Eye size={12} />}
                         onClick={() => setSelectedOrder(order)}
                       >
-                        عرض
+                        <span className="hidden sm:inline">عرض</span>
+                        <span className="sm:hidden">عرض</span>
                       </AdminButton>
+                    </div>
+
+                    {/* Mobile price and date */}
+                    <div className="sm:hidden text-right text-[10px] text-slate-400 border-t border-white/10 pt-2">
+                      <p className="font-black text-white text-xs">{order.total.toLocaleString("ar-EG")} ج.م</p>
+                      <p className="flex items-center gap-1 justify-end">
+                        <Clock size={8} />{formatDate(order.created_at)}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -299,40 +311,40 @@ export default function AdminDashboardPage() {
           title={`طلب #${String(selectedOrder.id).padStart(4, "0")}`}
           description={`${selectedOrder.customer_name} · ${formatDate(selectedOrder.created_at)}`}
         >
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <div className="flex flex-wrap gap-2">
               <StatusBadge status={selectedOrder.status} />
               <PaymentBadge method={selectedOrder.payment_method} />
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-2 sm:gap-3 grid-cols-1 sm:grid-cols-2">
               <InfoRow label="العميل"    value={selectedOrder.customer_name} />
               <InfoRow label="الهاتف"    value={selectedOrder.phone} dir="ltr" />
               <InfoRow label="المحافظة" value={selectedOrder.governorate} />
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p className="mb-3 text-xs font-bold text-slate-400">المنتجات</p>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-3 sm:p-4">
+              <p className="mb-2 sm:mb-3 text-[10px] sm:text-xs font-bold text-slate-400">المنتجات</p>
               <div className="space-y-2">
                 {selectedOrder.items.map((item, i) => (
-                  <div key={i} className="flex items-center justify-between gap-2 rounded-xl bg-white/5 px-3 py-2">
-                    <span className="text-sm font-bold text-white line-clamp-1 flex-1">{item.name}</span>
-                    <span className="text-xs text-slate-400 shrink-0">× {item.quantity}</span>
-                    <span className="text-sm font-black text-blue-400 shrink-0">
+                  <div key={i} className="flex items-center justify-between gap-2 rounded-xl bg-white/5 px-2 sm:px-3 py-1.5 sm:py-2">
+                    <span className="text-xs sm:text-sm font-bold text-white line-clamp-1 flex-1">{item.name}</span>
+                    <span className="text-[10px] sm:text-xs text-slate-400 shrink-0">× {item.quantity}</span>
+                    <span className="text-xs sm:text-sm font-black text-blue-400 shrink-0">
                       {(item.price * item.quantity).toLocaleString("ar-EG")} ج.م
                     </span>
                   </div>
                 ))}
               </div>
-              <div className="mt-3 flex justify-between border-t border-white/10 pt-3 text-sm font-black text-white">
+              <div className="mt-2 sm:mt-3 flex justify-between border-t border-white/10 pt-2 sm:pt-3 text-xs sm:text-sm font-black text-white">
                 <span>الإجمالي</span>
                 <span>{selectedOrder.total.toLocaleString("ar-EG")} ج.م</span>
               </div>
             </div>
 
-            <div className="flex justify-end pt-2 border-t border-white/10">
+            <div className="flex justify-end pt-2 sm:pt-3 border-t border-white/10">
               <Link href="/admin/orders">
-                <AdminButton variant="primary">الذهاب لصفحة الطلبات</AdminButton>
+                <AdminButton variant="primary" size="sm">الذهاب لصفحة الطلبات</AdminButton>
               </Link>
             </div>
           </div>
@@ -344,9 +356,9 @@ export default function AdminDashboardPage() {
 
 function InfoRow({ label, value, dir }: { label: string; value: string; dir?: string }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-white/5 p-3">
+    <div className="rounded-xl border border-white/10 bg-white/5 p-2.5 sm:p-3">
       <p className="mb-1 text-xs font-bold text-slate-400">{label}</p>
-      <p className="text-sm font-bold text-white" dir={dir}>{value}</p>
+      <p className="text-xs sm:text-sm font-bold text-white break-words" dir={dir}>{value}</p>
     </div>
   );
 }
