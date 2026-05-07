@@ -42,14 +42,31 @@ export default function Navbar() {
         <div className="container mx-auto px-6 max-w-[1400px]">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <Link href="/" className="flex items-center group relative z-[110]">
+            <Link href="/" className="flex items-center group relative z-[110] cursor-pointer">
               <div className="relative">
-                <img 
-                  src="/logo.svg" 
-                  alt="الاتحاد" 
-                  className="h-9 md:h-11 w-auto group-hover:scale-105 transition-transform duration-500 ease-out" 
+                <span 
+                  className={`text-2xl md:text-3xl font-black tracking-wide transition-all duration-500 ease-out group-hover:scale-105 ${
+                    isScrolled 
+                      ? "text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-blue-500" 
+                      : "text-white"
+                  }`}
+                  style={{
+                    textShadow: isScrolled 
+                      ? "none"
+                      : "0 0 12px rgba(37, 99, 235, 0.4), 0 2px 8px rgba(0,0,0,0.2)",
+                    fontFamily: "'Segoe UI', 'Apple Color Emoji', system-ui, sans-serif",
+                    letterSpacing: "0.05em"
+                  }}
+                >
+                  الاتحاد
+                </span>
+                <div 
+                  className={`absolute -inset-3 blur-lg rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none ${
+                    isScrolled 
+                      ? "bg-blue-400/10" 
+                      : "bg-blue-500/15"
+                  }`} 
                 />
-                <div className="absolute -inset-2 bg-blue-500/5 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
             </Link>
 

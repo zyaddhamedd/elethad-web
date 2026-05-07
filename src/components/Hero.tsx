@@ -2,8 +2,9 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 // Use the public folder path for hero video to avoid importing binary as a module
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 export default function Hero() {
   const [isHovered, setIsHovered] = useState(false);
@@ -17,6 +18,72 @@ export default function Hero() {
   const bgBlobTransition2 = shouldReduceMotion
     ? { duration: 0 }
     : { duration: 30, repeat: Infinity, ease: "linear" as const };
+
+  // Typing effect lines (RTL Arabic) — requested sentences
+  const lines = [
+    "قوة تدفق لا تتوقف",
+    "حلول مياه موثوقة",
+    "أداء يعتمد عليه",
+    "اختار الجودة الصح",
+  ];
+
+  const [displayText, setDisplayText] = useState("");
+  const [cursorVisible, setCursorVisible] = useState(true);
+
+  // refs to avoid stale closures inside timeouts
+  const lineIndexRef = useRef(0);
+  const charIndexRef = useRef(0);
+  const deletingRef = useRef(false);
+  const timeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const typingSpeed = 80; // ms per character (typing: medium)
+    const deletingSpeed = 40; // ms per character (deleting: faster)
+    const pauseAfterTyped = 2500; // ms pause after full sentence
+
+    const tick = () => {
+      const line = lines[lineIndexRef.current];
+
+      if (!deletingRef.current) {
+        // type next char
+        if (charIndexRef.current < line.length) {
+          charIndexRef.current += 1;
+          setDisplayText(line.slice(0, charIndexRef.current));
+          timeoutRef.current = window.setTimeout(tick, typingSpeed);
+        } else {
+          // finished typing — pause then start deleting
+          timeoutRef.current = window.setTimeout(() => {
+            deletingRef.current = true;
+            timeoutRef.current = window.setTimeout(tick, deletingSpeed);
+          }, pauseAfterTyped);
+        }
+      } else {
+        // deleting
+        if (charIndexRef.current > 0) {
+          charIndexRef.current -= 1;
+          setDisplayText(line.slice(0, charIndexRef.current));
+          timeoutRef.current = window.setTimeout(tick, deletingSpeed);
+        } else {
+          // move to next line
+          deletingRef.current = false;
+          lineIndexRef.current = (lineIndexRef.current + 1) % lines.length;
+          timeoutRef.current = window.setTimeout(tick, typingSpeed);
+        }
+      }
+    };
+
+    // start
+    timeoutRef.current = window.setTimeout(tick, typingSpeed);
+
+    // cursor blink
+    const cursorInterval = window.setInterval(() => setCursorVisible((v) => !v), 500);
+
+    return () => {
+      if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+      window.clearInterval(cursorInterval);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <section
@@ -73,7 +140,7 @@ export default function Hero() {
         />
       </div>
 
-      {/* Full-bleed video layer (covers entire hero) */}
+      {/* Full-bleed video layer (covers entire hero) with subtle blur */}
       <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 5 }} aria-hidden="true">
         <video
           src="/assets/hero.mp4"
@@ -83,50 +150,52 @@ export default function Hero() {
           playsInline
           preload="auto"
           className="w-full h-full object-cover"
+          style={{ filter: "blur(1.5px)", transform: "scale(1.02)", willChange: "filter, transform" }}
         />
       </div>
+      {/* Very subtle dark dim overlay on video only (keeps text sharp above) */}
+      <div
+        className="absolute inset-0 pointer-events-none z-[6]"
+        aria-hidden="true"
+        style={{ background: "rgba(0,0,0,0.35)" }}
+      />
 
       {/* Main container */}
       <div className="container mx-auto px-6 relative z-10 w-full h-full max-w-[1400px] flex flex-col-reverse md:block justify-center pt-10 md:pt-0 pb-10 md:pb-0">
 
         {/* 2. Text Layer (z-20) */}
         <div className="relative md:absolute md:top-1/2 md:-translate-y-1/2 md:right-4 lg:right-8 w-full md:w-[60%] z-20 flex flex-col items-center text-center md:items-start md:text-right gap-4 lg:gap-5 pointer-events-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-          >
-            <h1 className="text-[10vw] sm:text-[4.5rem] md:text-[6.5rem] lg:text-[7.5rem] xl:text-[8.5rem] font-black leading-[0.85] tracking-tight relative whitespace-nowrap">
-              <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-b from-slate-950 to-slate-700 drop-shadow-xl">
-                قوة جبارة،
-              </span>
-              <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-l from-blue-800 via-blue-600 to-cyan-400 relative inline-block pb-3 lg:pb-6 z-10 drop-shadow-2xl">
-                تدفق لا يتوقف.
-              </span>
-            </h1>
-          </motion.div>
+          <div className="relative w-full">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
+                className="relative z-20 px-4 py-6 md:py-8 lg:px-8 lg:py-10"
+              >
+                <h1 dir="rtl" className="text-[10vw] sm:text-[4rem] md:text-[5.5rem] lg:text-[6.5rem] xl:text-[7.5rem] font-black leading-[0.9] tracking-tight relative whitespace-normal text-white text-right">
+                  <span className="inline-block max-w-full break-words">{displayText}</span>
+                  <span aria-hidden style={{ opacity: cursorVisible ? 1 : 0 }} className="inline-block text-white">|</span>
+                </h1>
+              </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.15, ease: "easeOut" }}
-            className="relative z-30 max-w-[90%] lg:max-w-[550px]"
-          >
-            <p className="text-base sm:text-lg lg:text-xl text-slate-600 leading-relaxed font-semibold mb-6 lg:mb-8">
-              مواتير وفلاتر مياه بتكنولوجيا ألمانية متطورة. أداء استثنائي صامت يوفر لك تدفقاً مثالياً وعمراً أطول.
-            </p>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.15, ease: "easeOut" }}
+                className="relative z-20 max-w-[90%] lg:max-w-[550px] px-4 pb-6 lg:pb-8"
+              >
+                <p className="text-base sm:text-lg lg:text-xl text-white/90 leading-relaxed font-semibold mb-6 lg:mb-8">
+                  مواتير وفلاتر مياه بتكنولوجيا ألمانية متطورة. أداء استثنائي صامت يوفر لك تدفقاً مثالياً وعمراً أطول.
+                </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3 w-full">
-              <button className="w-[85%] sm:w-auto group px-6 py-3 md:px-8 md:py-4 bg-blue-600 text-white rounded-2xl font-black text-base md:text-lg shadow-[0_15px_30px_-10px_rgba(37,99,235,0.6)] hover:shadow-[0_20px_40px_-5px_rgba(37,99,235,0.8)] hover:bg-blue-700 transition-all flex items-center justify-center gap-3 hover:-translate-y-1">
-                تسوق الآن
-                <ArrowLeft size={18} className="group-hover:-translate-x-2 transition-transform" />
-              </button>
-              <button className="w-[85%] sm:w-auto px-6 py-3 md:px-8 md:py-4 bg-white/80 backdrop-blur-md text-slate-800 rounded-2xl font-bold text-base md:text-lg border-2 border-slate-200/50 hover:border-blue-400 hover:bg-white transition-all shadow-sm hover:shadow-lg hover:-translate-y-1">
-                اكتشف المنتجات
-              </button>
+                <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-3 w-full">
+                  <Link href="/products" className="w-[85%] sm:w-auto group px-6 py-3 md:px-8 md:py-4 bg-blue-600 text-white rounded-2xl font-black text-base md:text-lg shadow-[0_15px_30px_-10px_rgba(37,99,235,0.6)] hover:shadow-[0_20px_40px_-5px_rgba(37,99,235,0.8)] hover:bg-blue-700 transition-all flex items-center justify-center gap-3 hover:-translate-y-1">
+                    تسوق الآن
+                    <ArrowLeft size={18} className="group-hover:-translate-x-2 transition-transform" />
+                  </Link>
+                </div>
+              </motion.div>
             </div>
-          </motion.div>
         </div>
 
         {/* 3. Motor Image Layer (z-10) */}
